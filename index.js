@@ -39,6 +39,11 @@ function visualizeRender (component) {
             outline: '3px solid rgba(197, 203, 1, 1)'
         }
     };
+    
+    // back up lifecycle methods
+    var _componentDidMount = component.prototype.componentDidMount;
+    var _componentDidUpdate = component.prototype.componentDidUpdate;
+    var _componentWillUnmount = component.prototype.componentWillUnmount;
 
     component.prototype.componentDidMount = function(){
         // Create empty state object if not defined
@@ -62,6 +67,9 @@ function visualizeRender (component) {
         this._updateRenderLogPositionTimeout = setInterval(
             this._updateRenderLogPosition.bind(this), this.UPDATE_RENDER_LOG_POSITION_TIMEOUT_MS
         );
+        
+        // run original lifecycle method
+        _componentDidMount.apply(this, arguments);
     };
 
     component.prototype.componentDidUpdate = function(prevProps, prevState){
@@ -73,6 +81,9 @@ function visualizeRender (component) {
 
         // Highlight the update
         this._highlightChange(this.STATE_CHANGES.UPDATE);
+        
+        // run original lifecycle method
+        _componentDidUpdate.apply(this, arguments);
     };
 
     component.prototype.componentWillUnmount = function (){
@@ -81,6 +92,9 @@ function visualizeRender (component) {
 
         // Clear the update position timeout
         clearInterval(this._updateRenderLogPositionTimeout);
+        
+        // run original lifecycle method
+        _componentWillUnmount.apply(this, arguments);
     };
 
     /*
